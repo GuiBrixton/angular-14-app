@@ -1,14 +1,26 @@
 pipeline{
 
-  agent {
-    node {
-      label 'node-nodejs'
+      agent {
+        kubernetes {
+            yaml '''
+apiVersion: v1
+kind: Pod
+spec:
+  containers:
+  - name: shell
+    image: acavaleiro/jenkins-nodo-nodejs-bootcamp:1.0
+    command:
+    - sleep
+    args:
+    - infinity
+'''
+            defaultContainer 'shell'
+        }
     }
-  }
 
   environment {
     registryCredential='docker-hub-credentials'
-    registryFrontend = 'franaznarteralco/frontend-demo'
+    registryFrontend = 'acavaleiro/frontend-demo'
   }
 
   stages {
@@ -18,13 +30,6 @@ pipeline{
       }
     }
 
-    stage('SonarQube analysis') {
-      steps {
-        withSonarQubeEnv(credentialsId: "sonarqube-credentials", installationName: "sonarqube-server"){
-          sh 'npm run sonar'
-        }
-      }
-    }
 
     stage('Quality Gate') {
       steps {
@@ -69,7 +74,7 @@ pipeline{
             sh 'rm -r configuracion'
           }
         }
-        sh 'git clone https://github.com/dberenguerdevcenter/kubernetes-helm-docker-config.git configuracion --branch test-implementation'
+        sh 'git clone https://github.com/acavaleiro/kubernetes-helm-docker-config.git configuracion --branch test-implementation'
         sh 'kubectl apply -f configuracion/kubernetes-deployment/angular-14-app/manifest.yml -n default --kubeconfig=configuracion/kubernetes-config/config'
       }
 
