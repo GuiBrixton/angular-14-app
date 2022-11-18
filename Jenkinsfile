@@ -8,7 +8,7 @@ kind: Pod
 spec:
   containers:
   - name: shell
-    image: acavaleiro/jenkins-nodo-nodejs-bootcamp:1.0
+    image: acavaleiro/jenkins-nodo-js-bootcamp:1.0
     command:
     - sleep
     args:
