@@ -19,7 +19,7 @@ spec:
     }
 
   environment {
-    registryCredential='docker-hub-credentials'
+    registryCredential='acavaleiro'
     registryFrontend = 'acavaleiro/frontend-demo'
   }
 
@@ -29,20 +29,7 @@ spec:
         sh 'npm install && npm run build'
       }
     }
-
-
-    stage('Quality Gate') {
-      steps {
-        timeout(time: 10, unit: "MINUTES") {
-          script {
-            def qg = waitForQualityGate()
-            if (qg.status != 'OK') {
-               error "Pipeline aborted due to quality gate failure: ${qg.status}"
-            }
-          }
-        }
-      }
-    }
+  
 
     stage('Push Image to Docker Hub') {
       steps {
@@ -74,7 +61,7 @@ spec:
             sh 'rm -r configuracion'
           }
         }
-        sh 'git clone https://github.com/acavaleiro/kubernetes-helm-docker-config.git configuracion --branch test-implementation'
+        sh 'git clone https://github.com/Guibrixton/kubernetes-helm-docker-config.git configuracion --branch test-implementation'
         sh 'kubectl apply -f configuracion/kubernetes-deployment/angular-14-app/manifest.yml -n default --kubeconfig=configuracion/kubernetes-config/config'
       }
 
