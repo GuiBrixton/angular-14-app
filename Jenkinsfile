@@ -26,7 +26,7 @@ spec:
 '''
             defaultContainer 'shell'
         }
-    }
+    } 
 
   environment {
     registryCredential='acavaleiro'
@@ -37,6 +37,7 @@ spec:
     stage('Build') {
       steps {
         sh 'npm install && npm run build'
+        sleep: 20
       }
     }
   
