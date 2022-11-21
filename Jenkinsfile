@@ -33,7 +33,7 @@ spec:
 
   }
   environment {
-    registryCredential='docker-hub-credentials'
+    registryCredential='acvaleiro'
     registryFrontend = 'acavaleiro/angular-14-app'
   }
   stages {
