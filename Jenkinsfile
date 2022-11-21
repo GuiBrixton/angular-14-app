@@ -8,7 +8,7 @@ kind: Pod
 spec:
   containers:
   - name: shell
-  image: acavaleiro/jenkins-nodo-js-bootcamp:1.0
+    image: acavaleiro/jenkins-nodo-java-bootcamp:1.0
     volumeMounts:
     -mountPath: /var/run/docker.sock
      name: docker-socket-volume
@@ -36,7 +36,8 @@ spec:
   stages {
     stage('Build') {
       steps {
-        sh 'npm install && npm run build'
+         sh 'npm install'
+	       sh 'npm run build &'
         sleep: 20
       }
     }
