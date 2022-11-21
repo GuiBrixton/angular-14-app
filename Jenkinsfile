@@ -1,49 +1,53 @@
 pipeline{
 
-      agent {
-        kubernetes {
-            yaml '''
+  agent {
+
+      kubernetes {
+
+        yaml '''
+
 apiVersion: v1
+
 kind: Pod
 spec:
   containers:
   - name: shell
-    image: acavaleiro/jenkins-nodo-java-bootcamp:1.0
+    image: acavaleiro/jenkins-nodo-js-bootcamp:1.0
     volumeMounts:
-    -mountPath: /var/run/docker.sock
-     name: docker-socket-volume
+    - mountPath: /var/run/docker.sock
+      name: docker-socket-volume
     securityContext:
-    privileged: true
+      privileged: true
   volumes:
   - name: docker-socket-volume
     hostPath:
       path: /var/run/docker.sock
       type: Socket
-  command:
+    command:
     - sleep
     args:
     - infinity
-'''
-            defaultContainer 'shell'
-        }
-    } 
+        '''
+        defaultContainer 'shell'
+      }
 
-  environment {
-    registryCredential='acavaleiro'
-    registryFrontend = 'acavaleiro/frontend-demo'
   }
-
+  environment {
+    registryCredential='docker-hub-credentials'
+    registryFrontend = 'acavaleiro/angular-14-app'
+  }
   stages {
     stage('Build') {
       steps {
-         sh 'npm install'
-	       sh 'npm run build &'
-         sleep 20
+        sh 'npm install'
+        sh 'npm run build &'
+        sleep 20
+        sh 'ls -la'
+        sh 'cd src'
+        sh 'ls -la'
       }
     }
-  
-
-    stage('Push Image to Docker Hub') {
+   stage('Push Image to Docker Hub') {
       steps {
         script {
           dockerImage = docker.build registryFrontend + ":$BUILD_NUMBER"
@@ -53,7 +57,6 @@ spec:
         }
       }
     }
-
     stage('Push Image latest to Docker Hub') {
       steps {
         script {
@@ -61,28 +64,29 @@ spec:
           docker.withRegistry( '', registryCredential) {
             dockerImage.push()
           }
+
         }
+
       }
+
     }
-
-    stage('Deploy to K8s') {
-
+   stage('Deploy to K8s') {
       steps{
         script {
           if(fileExists("configuracion")){
             sh 'rm -r configuracion'
           }
         }
-        sh 'git clone https://github.com/Guibrixton/kubernetes-helm-docker-config.git configuracion --branch test-implementation'
-        sh 'kubectl apply -f configuracion/kubernetes-deployment/angular-14-app/manifest.yml -n default --kubeconfig=configuracion/kubernetes-config/config'
+      sh 'git clone https://github.com/Guibrixton/kubernetes-helm-docker-config.git configuracion --branch test-implementation'
+      sh 'kubectl apply -f configuracion/kubernetes-deployment/angular-14-app/manifest.yml -n default --kubeconfig=configuracion/kubernetes-config/config'
       }
-
     }
-  }
 
-  post {
+  }
+ post {
     always {
       sh 'docker logout'
     }
+
   }
 }
