@@ -33,7 +33,7 @@ spec:
 
   }
   environment {
-    registryCredential='acvaleiro'
+    registryCredential='acavaleiro'
     registryFrontend = 'acavaleiro/angular-14-app'
   }
   stages {
